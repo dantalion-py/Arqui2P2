@@ -19,6 +19,8 @@
 - **Cliente (Enviar base de datos - Erik)**:
     
     - Crear un método en el cliente (HTML/JS) para enviar todos los registros de MongoDB al servidor usando una API GET.
+        1.- crear un metodo que bevuelva tada la base de datos
+        2.- crear la ventana donde se mostrara toda la base de datos
 - **Datos en tiempo real (Jorge y José)**:
     
     - Obtener datos de los sensores en tiempo real.

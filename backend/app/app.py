@@ -1,22 +1,30 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Configuración de la base de datos (ejemplo usando MongoDB)
+# Conexión a MongoDB (asegúrate de que MongoDB esté ejecutándose en tu instancia)
 client = MongoClient("mongodb+srv://delfin:FuegoRojo@clusterarqui.2kmjw.mongodb.net/")
-db = client["sensores"]
-collection = db["lecturas"]
+db = client['sensores_db']            # Nombre de la base de datos
+temperaturas = db['temperaturas']      # Nombre de la colección
 
 @app.route('/registro-temperatura', methods=['POST'])
-def registrar_temperatura():
+def registro_temperatura():
     data = request.get_json()
-    if "sensor" in data and "temperatura" in data:
-        # Insertar los datos en la base de datos
-        collection.insert_one(data)
-        return jsonify({"mensaje": "Lectura registrada correctamente"}), 201
-    else:
-        return jsonify({"error": "Datos inválidos"}), 400
+    temperatura = data.get("temperatura")
+
+    if temperatura is None:
+        return jsonify({"error": "No se recibió ninguna temperatura"}), 400
+
+    # Crear el registro con la temperatura y la hora
+    registro = {
+        "temperatura": temperatura,
+        "timestamp": datetime.now()
+    }
+    temperaturas.insert_one(registro)  # Guardar en MongoDB
+
+    return jsonify({"mensaje": "Temperatura registrada correctamente"}), 201
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

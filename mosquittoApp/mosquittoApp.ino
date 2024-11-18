@@ -9,9 +9,12 @@ const char* password = "12345678";
 // Dirección del servidor de la API (IP de tu instancia de Google Cloud y puerto)
 const char* serverName = "http://35.193.61.252:5000/registro-temperatura";
 
-// Pines para los sensores DS18B20
 #define ONE_WIRE_BUS1 13
 #define ONE_WIRE_BUS2 26
+
+
+#define pinLed1 27
+#define pinLed1 32
 
 OneWire oneWire1(ONE_WIRE_BUS1);
 OneWire oneWire2(ONE_WIRE_BUS2);

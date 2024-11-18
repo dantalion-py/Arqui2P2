@@ -1,0 +1,77 @@
+.dashboard-main{
+    background-color: #383838;
+    border-radius: .4rem;
+}
+
+h3{
+    color: white;
+}
+.dashboard-devices {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: rgb(63, 63, 63);
+    display: flex;
+    border-radius: 15px;
+    justify-content: center;
+}
+
+.all-devices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.device {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+    margin: .3rem;
+    background-color: #3f3f3f;
+}
+
+.add-device-form {
+    
+    margin-top: 20px;
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #6b6a6a;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: .1rem;
+}
+
+button:hover {
+    background-color: #cecece;
+}
+.title-dashboard{
+    display: flex;
+    color: #ffffff;
+    justify-content: center;
+}

@@ -5,19 +5,17 @@ import '../styles/Login.css';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null); // Para manejar errores
-    const navigate = useNavigate(); // Para navegación
+    const [error, setError] = useState(null); 
+    const navigate = useNavigate(); 
 
     const handleLogin = async (e) => {
         e.preventDefault();
     
-        // Verifica si los campos no están vacíos
         if (!email || !password) {
             setError('Email and Password are required');
             return;
         }
     
-        // Enviar datos al backend
         const response = await fetch('http://localhost:5000/login', {
             method: 'POST',
             headers: {
@@ -28,9 +26,7 @@ const Login = () => {
     
         if (response.ok) {
             const data = await response.json();
-            // Guardar el token en el localStorage
             localStorage.setItem('authToken', data.token);
-            // Redirigir al Dashboard
             navigate('/dashboard');
         } else {
             setError('Invalid email or password');
@@ -39,7 +35,6 @@ const Login = () => {
     
 
     const handleCreateAccount = () => {
-        // Redirigir al formulario de registro
         navigate('/FormRegister');
     };
 
@@ -48,7 +43,7 @@ const Login = () => {
             <div className="login-container">
                 <form onSubmit={handleLogin} className="login-form">
                     <h2 className="Leders">Login</h2>
-                    {error && <p className="error-message">{error}</p>} {/* Mostrar error */}
+                    {error && <p className="error-message">{error}</p>} {}
                     <div className="form-group">
                         <label>Email</label>
                         <input

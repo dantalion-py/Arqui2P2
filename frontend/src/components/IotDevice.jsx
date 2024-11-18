@@ -1,9 +1,9 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';  // Import useLocation to access the state
+import { useLocation } from 'react-router-dom'; 
 import '../styles/IotDevice.css';
 const IotSetting = () => {
-    const location = useLocation(); // Get location data passed through navigate
-    const { device } = location.state || {}; // Destructure the device object from state
+    const location = useLocation(); 
+    const { device } = location.state || {}; 
 
     if (!device) {
         return <div className="error-message">Device not found.</div>;

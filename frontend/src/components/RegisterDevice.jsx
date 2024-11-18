@@ -26,7 +26,7 @@ const RegisterDevice = ({ fetchDevices }) => {
             });
             if (response.ok) {
                 setFormData({ name: '', status: 'active' });
-                fetchDevices();  // Llamar a la función fetchDevices para actualizar la lista
+                fetchDevices(); 
             } else {
                 console.error('Error adding device:', response.statusText);
             }

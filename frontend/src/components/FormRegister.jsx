@@ -11,13 +11,11 @@ const FormRegister = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // Validación básica
         if (!name || !lastName || !email || !password) {
             setError('All fields are required!');
             return;
         }
 
-        // Crear el objeto formData para enviar al backend
         const formData = {
             name: name,
             last_name: lastName,
@@ -33,12 +31,11 @@ const FormRegister = () => {
             });
 
             if (response.ok) {
-                // Limpiar el formulario si la solicitud fue exitosa
                 setName('');
                 setLastName('');
                 setEmail('');
                 setPassword('');
-                setError(''); // Limpiar el mensaje de error si todo va bien
+                setError(''); 
                 alert("User registered successfully!");
             } else {
                 const errorData = await response.json();

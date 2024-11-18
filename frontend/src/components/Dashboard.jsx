@@ -33,7 +33,7 @@ const Dashboard = () => {
             });
 
             if (response.ok) {
-                fetchDevices();  // Recargar la lista de dispositivos después de eliminar
+                fetchDevices(); 
             } else {
                 console.error('Error deleting device');
             }

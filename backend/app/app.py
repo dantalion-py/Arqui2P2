@@ -38,7 +38,7 @@ def registro_temperatura():
 # Obtener todos los dispositivos
 @app.route('/devices', methods=['GET'])
 def get_devices():
-    devices = list(devices_collection.find({}, {'_id': 0}))  # Excluir el campo _id
+    devices = list(devices_collection.find({}, {'_id': 0}))  
     return jsonify(devices)
 
 @app.route('/devices', methods=['POST'])
@@ -50,21 +50,19 @@ def add_device():
     # Crear el dispositivo con los campos solicitados
     device = {
         "name": data['name'],
-        "register_date": datetime.now().isoformat(),  # Cambiar a `register_date`
-        "status": data.get('status', 'active'),       # Por defecto 'active'
+        "register_date": datetime.now().isoformat(),  
+        "status": data.get('status', 'active'),       
     }
     
     # Insertar el dispositivo en MongoDB
     result = devices_collection.insert_one(device)
 
-    # Agregar `id_device` basado en el `_id` generado automáticamente
-    id_device = str(result.inserted_id)  # Convertir ObjectId a string
+    id_device = str(result.inserted_id)  
     devices_collection.update_one(
         {"_id": result.inserted_id},
         {"$set": {"id_device": id_device}}
     )
 
-    # Preparar respuesta con el campo `id_device`
     device["_id"] = id_device
     device["id_device"] = id_device
 
@@ -112,15 +110,12 @@ def login():
     email = data.get('email')
     password = data.get('password')
 
-    # Aquí debes buscar al usuario en tu base de datos
     user = users_collection.find_one({'email': email})
 
     if not user:
         return jsonify({"error": "Invalid email or password"}), 401
 
-    # Verificar la contraseña (en texto plano, sin hash, no recomendado para producción)
     if user['password'] == password:
-        # Elimina la generación del token JWT
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"error": "Invalid email or password"}), 401

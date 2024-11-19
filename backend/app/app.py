@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 # Habilitar CORS
 CORS(app)
+led_states = {"led1": False, "led2": False}
 
 # Conexión a MongoDB
 client = MongoClient("mongodb+srv://delfin:FuegoRojo@clusterarqui.2kmjw.mongodb.net/")
@@ -120,6 +121,43 @@ def login():
     else:
         return jsonify({"error": "Invalid email or password"}), 401
 
+@app.route('/registro-temperatura', methods=['GET'])
+def obtener_ultima_temperatura():
+    ultimo_registro = temperaturas.find_one(sort=[("timestamp", -1)])  # Ordena por timestamp descendente y toma el primero
+    if not ultimo_registro:
+        return jsonify({"error": "No temperature records found"}), 404
 
+    # Convertir el ObjectId y timestamp a cadenas para JSON
+    ultimo_registro["_id"] = str(ultimo_registro["_id"])
+    ultimo_registro["timestamp"] = ultimo_registro["timestamp"].isoformat()
+    return jsonify(ultimo_registro), 200
+
+
+@app.route('/temperaturas', methods=['GET'])
+def obtener_temperaturas():
+    registros = list(temperaturas.find().sort("timestamp", 1))  # Ordenar por fecha (ascendente)
+    if not registros:
+        return jsonify([]), 200  # Si no hay registros, devolver una lista vacía
+
+    # Convertir los registros en un formato serializable
+    for registro in registros:
+        registro["_id"] = str(registro["_id"])  # Convierte ObjectId a string
+        registro["timestamp"] = registro["timestamp"].isoformat()  # Convierte datetime a string ISO
+
+    return jsonify(registros), 200
+
+@app.route('/led/<led_id>', methods=['POST'])
+def control_led(led_id):
+    if led_id not in ["led1", "led2"]:
+        return jsonify({"error": "Invalid LED ID"}), 400
+
+    data = request.json
+    action = data.get("action")
+
+    if action not in ["on", "off"]:
+        return jsonify({"error": "Invalid action. Use 'on' or 'off'."}), 400
+
+    led_states[led_id] = (action == "on")
+    return jsonify({"message": f"{led_id} turned {action}", "state": led_states[led_id]}), 200
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

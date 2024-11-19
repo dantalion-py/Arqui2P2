@@ -59,12 +59,12 @@ const Dashboard = () => {
                 {devices.map((device, index) => (
                     <div className="device" key={index}>
                         <h3>{device.name}</h3>
-                        <p>Status: {device.status}</p>
+                        <p>Status: <strong className='act_res'>{device.status}</strong></p>
                         <button onClick={() => deleteDevice(device.id_device)}>
                             Remove
                         </button>
                         <button onClick={() => openDevice(device)}>
-                            settings
+                            details
                         </button>
                     </div>
                 ))}

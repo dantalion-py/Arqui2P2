@@ -1,0 +1,28 @@
+.temperature-dashboard {
+    text-align: center;
+    padding: 20px;
+    background-color: rgb(68, 68, 68);
+    border-radius: 1rem;
+}
+
+.temperature-header h1 {
+    font-size: 3em;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.charts-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.chart-container {
+    width: 45%;
+    min-width: 300px;
+}
+
+.error-message {
+    color: red;
+}

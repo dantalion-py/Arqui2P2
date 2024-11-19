@@ -151,15 +151,32 @@ def obtener_temperaturas():
     return jsonify(registros), 200
 @app.route('/led/<led_id>', methods=['GET'])
 def get_led_state(led_id):
-    if led_id not in ["led1", "led2"]:
+    if led_id not in led_states:
         return jsonify({"error": "Invalid LED ID"}), 400
-
-    # Suponiendo que tengas un diccionario que almacene el estado de los LEDs
-    led_state = led_states.get(led_id, False)  # Default to False if not set
+    
+    # Obtener el estado actual del LED (on/off)
+    led_state = led_states[led_id]
     action = "on" if led_state else "off"
     
     return jsonify({"state": action}), 200
 
+@app.route('/led/<led_id>', methods=['POST'])
+def set_led_state(led_id):
+    if led_id not in led_states:
+        return jsonify({"error": "Invalid LED ID"}), 400
+    
+    # Obtener la acción (on/off) desde el cuerpo de la solicitud
+    data = request.get_json()
+    action = data.get('action')
+
+    if action not in ["on", "off"]:
+        return jsonify({"error": "Invalid action. Must be 'on' or 'off'."}), 400
+    
+    # Actualizar el estado del LED según la acción recibida
+    led_states[led_id] = (action == "on")
+
+    # Devolver una respuesta confirmando la acción realizada
+    return jsonify({"message": f"LED {led_id} turned {action}."}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

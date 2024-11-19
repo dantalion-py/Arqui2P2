@@ -49,11 +49,10 @@ void loop() {
     // Enviar la temperatura al servidor
     sendTemperatureToServer(temperatura);
 
-    // Enviar solicitud para controlar el LED1
-    controlLED(serverNameLed1, "on");  // Puedes cambiar a "off" según lo que necesites
-
-    // Enviar solicitud para controlar el LED2
-    controlLED(serverNameLed2, "off");  // Similar para LED2
+    // Comprobar el estado actual de los LEDs y actualizar si es necesario
+    // Obtener el estado de los LEDs desde el servidor (solo si es necesario)
+    getAndControlLED(serverNameLed1);
+    getAndControlLED(serverNameLed2);
 
     delay(5000);  // Esperar 5 segundos antes de repetir
   } else {
@@ -83,23 +82,21 @@ void sendTemperatureToServer(float temperatura) {
   http.end();  // Finalizar la conexión HTTP
 }
 
-// Función para controlar los LEDs
-void controlLED(const char* server, const String& action) {
+// Función para controlar los LEDs según la respuesta del servidor
+void getAndControlLED(const char* server) {
   HTTPClient http;
   http.begin(server);  // Iniciar la conexión HTTP con el servidor para controlar el LED
   http.addHeader("Content-Type", "application/json");
 
-  // Crear el JSON para enviar (accion 'on' o 'off')
-  String jsonPayload = "{\"action\": \"" + action + "\"}";
+  // Realizar una solicitud GET para obtener el estado actual del LED
+  int httpResponseCode = http.GET();  // Realizar la solicitud GET
 
-  int httpResponseCode = http.POST(jsonPayload);  // Enviar el JSON al servidor
-
-  // Comprobar la respuesta del servidor
   if (httpResponseCode > 0) {
     String response = http.getString();
     Serial.println("Respuesta del servidor (LED): " + response);
-    // Según la respuesta, controlas los LEDs localmente
-    if (action == "on") {
+
+    // Si la respuesta indica que el LED debe estar encendido, encenderlo
+    if (response.indexOf("on") >= 0) {
       digitalWrite(pinLed1, HIGH);  // Encender LED
     } else {
       digitalWrite(pinLed1, LOW);  // Apagar LED

@@ -11,6 +11,10 @@ app = Flask(__name__)
 
 # Habilitar CORS
 CORS(app)
+led_states = {
+    "led1": False,  # LED1 está apagado
+    "led2": True,   # LED2 está encendido
+}
 
 # Conexión a MongoDB
 client = MongoClient("mongodb+srv://delfin:FuegoRojo@clusterarqui.2kmjw.mongodb.net/")
@@ -145,28 +149,16 @@ def obtener_temperaturas():
         registro["timestamp"] = registro["timestamp"].isoformat()  # Convierte datetime a string ISO
 
     return jsonify(registros), 200
-
-@app.route('/led/<led_id>', methods=['POST'])
-def control_led(led_id):
+@app.route('/led/<led_id>', methods=['GET'])
+def get_led_state(led_id):
     if led_id not in ["led1", "led2"]:
         return jsonify({"error": "Invalid LED ID"}), 400
 
-    data = request.json
-    action = data.get("action")
-
-    if action not in ["on", "off"]:
-        return jsonify({"error": "Invalid action. Use 'on' or 'off'."}), 400
-
-    # Aquí puedes manejar el control de los LEDs en el servidor
-    if led_id == "led1":
-        # Enviar la señal a la ESP32 para encender o apagar el LED1
-        # Este es un ejemplo, necesitarías configurar el servidor para controlar los pines de la ESP32
-        pass
-    elif led_id == "led2":
-        # Similar para LED2
-        pass
+    # Suponiendo que tengas un diccionario que almacene el estado de los LEDs
+    led_state = led_states.get(led_id, False)  # Default to False if not set
+    action = "on" if led_state else "off"
     
-    return jsonify({"message": f"{led_id} turned {action}"}), 200
+    return jsonify({"state": action}), 200
 
 
 if __name__ == '__main__':

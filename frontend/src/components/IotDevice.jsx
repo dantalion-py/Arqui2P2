@@ -29,10 +29,14 @@ const TemperatureDashboard = () => {
     const [lineChartData, setLineChartData] = useState(null);
     const [histogramData, setHistogramData] = useState(null);
     const [error, setError] = useState(null);
+    const [ledState, setLedState] = useState({
+        led1: 'off',
+        led2: 'off',
+    });
 
     const fetchTemperatureData = async () => {
         try {
-            const response = await fetch('http://35.193.61.252:5000/temperaturas');
+            const response = await fetch('http://localhost:5000/temperaturas');
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
@@ -97,7 +101,7 @@ const TemperatureDashboard = () => {
 
     const controlLed = async (ledId, action) => {
         try {
-            const response = await fetch(`http://35.193.61.252:5000/led/${ledId}`, {
+            const response = await fetch(`http://localhost:5000/led/${ledId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action }),
@@ -109,6 +113,12 @@ const TemperatureDashboard = () => {
 
             const data = await response.json();
             alert(`${data.message}`);
+
+            // Actualizar el estado de los LEDs después de la solicitud exitosa
+            setLedState((prevState) => ({
+                ...prevState,
+                [ledId]: action,
+            }));
         } catch (err) {
             alert(`Failed to control LED: ${err.message}`);
         }
@@ -147,10 +157,30 @@ const TemperatureDashboard = () => {
                 )}
             </div>
             <div className="led-control">
-                <button onClick={() => controlLed('led1', 'on')}>Turn ON LED 1</button>
-                <button onClick={() => controlLed('led1', 'off')}>Turn OFF LED 1</button>
-                <button onClick={() => controlLed('led2', 'on')}>Turn ON LED 2</button>
-                <button onClick={() => controlLed('led2', 'off')}>Turn OFF LED 2</button>
+                <button
+                    onClick={() => controlLed('led1', 'on')}
+                    disabled={ledState.led1 === 'on'}
+                >
+                    Turn ON LED 1
+                </button>
+                <button
+                    onClick={() => controlLed('led1', 'off')}
+                    disabled={ledState.led1 === 'off'}
+                >
+                    Turn OFF LED 1
+                </button>
+                <button
+                    onClick={() => controlLed('led2', 'on')}
+                    disabled={ledState.led2 === 'on'}
+                >
+                    Turn ON LED 2
+                </button>
+                <button
+                    onClick={() => controlLed('led2', 'off')}
+                    disabled={ledState.led2 === 'off'}
+                >
+                    Turn OFF LED 2
+                </button>
             </div>
         </div>
     );

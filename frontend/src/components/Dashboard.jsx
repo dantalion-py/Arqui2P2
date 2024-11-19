@@ -12,7 +12,7 @@ const Dashboard = () => {
 
     const fetchDevices = async () => {
         try {
-            const response = await fetch('http://35.193.61.252:5000/devices');
+            const response = await fetch('http://localhost:5000/devices');
             const data = await response.json();
             setDevices(data);
         } catch (error) {
@@ -28,7 +28,7 @@ const Dashboard = () => {
     const deleteDevice = async (deviceId) => {
         console.log("ID del dispositivo a eliminar:", deviceId);
         try {
-            const response = await fetch(`http://35.193.61.252:5000/devices/${deviceId}`, {
+            const response = await fetch(`http://localhost:5000/devices/${deviceId}`, {
                 method: 'DELETE',
             });
 

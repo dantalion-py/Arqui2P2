@@ -24,7 +24,7 @@ const FormRegister = () => {
         };
 
         try {
-            const response = await fetch('http://35.193.61.252:5000/user', {
+            const response = await fetch('http://localhost:5000/user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

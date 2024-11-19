@@ -1,46 +1,112 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
+// Credenciales Wi-Fi
 const char* ssid = "saitama123";
 const char* password = "12345678";
 
+// Dirección del servidor API
+const char* serverNameTemp = "http://35.193.61.252:5000/registro-temperatura";  // Registro de temperatura
+const char* serverNameLed1 = "http://35.193.61.252:5000/led/led1";  // Control de LED1
+const char* serverNameLed2 = "http://35.193.61.252:5000/led/led2"; // Control de LED2
+
+// Configuración de los pines para los LEDs
 #define pinLed1 27
 #define pinLed2 32
 
+// Configuración del sensor DS18B20
+#define ONE_WIRE_BUS 13 // Pin para el sensor DS18B20
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
 void setup() {
   Serial.begin(115200);
+
+  // Conexión a Wi-Fi
   WiFi.begin(ssid, password);
-
-  pinMode(pinLed1, OUTPUT);
-  pinMode(pinLed2, OUTPUT);
-  digitalWrite(pinLed1, LOW);
-  digitalWrite(pinLed2, LOW);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   Serial.println("\nWiFi conectado");
+
+  // Configuración de los pines de los LEDs como salida
+  pinMode(pinLed1, OUTPUT);
+  pinMode(pinLed2, OUTPUT);
+
+  // Inicializar el sensor de temperatura
+  sensors.begin();
 }
 
 void loop() {
-  HTTPClient http;
-  http.begin("http://35.193.61.252:5000/led_states");
+  if (WiFi.status() == WL_CONNECTED) {
+    // Leer la temperatura
+    sensors.requestTemperatures();
+    float temperatura = sensors.getTempCByIndex(0); // Obtener la temperatura del primer sensor DS18B20
 
-  int httpCode = http.GET();
-  if (httpCode > 0) {
-    String response = http.getString();
-    if (response.indexOf("\"led1\":true") != -1) {
-      digitalWrite(pinLed1, HIGH);
-    } else {
-      digitalWrite(pinLed1, LOW);
-    }
-    if (response.indexOf("\"led2\":true") != -1) {
-      digitalWrite(pinLed2, HIGH);
-    } else {
-      digitalWrite(pinLed2, LOW);
-    }
+    // Enviar la temperatura al servidor
+    sendTemperatureToServer(temperatura);
+
+    // Enviar solicitud para controlar el LED1
+    controlLED(serverNameLed1, "on");  // Puedes cambiar a "off" según lo que necesites
+
+    // Enviar solicitud para controlar el LED2
+    controlLED(serverNameLed2, "off");  // Similar para LED2
+
+    delay(5000);  // Esperar 5 segundos antes de repetir
+  } else {
+    Serial.println("WiFi desconectado");
   }
-  http.end();
-  delay(5000);
+}
+
+// Función para enviar la temperatura al servidor
+void sendTemperatureToServer(float temperatura) {
+  HTTPClient http;
+  http.begin(serverNameTemp);  // Iniciar la conexión HTTP con el servidor para registrar temperatura
+  http.addHeader("Content-Type", "application/json");
+
+  // Crear el JSON para enviar con la temperatura
+  String jsonPayload = "{\"temperatura\": " + String(temperatura) + "}";
+
+  int httpResponseCode = http.POST(jsonPayload);  // Enviar el JSON al servidor
+
+  // Comprobar la respuesta del servidor
+  if (httpResponseCode > 0) {
+    String response = http.getString();
+    Serial.println("Respuesta del servidor (temperatura): " + response);
+  } else {
+    Serial.print("Error en la solicitud HTTP: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();  // Finalizar la conexión HTTP
+}
+
+// Función para controlar los LEDs
+void controlLED(const char* server, const String& action) {
+  HTTPClient http;
+  http.begin(server);  // Iniciar la conexión HTTP con el servidor para controlar el LED
+  http.addHeader("Content-Type", "application/json");
+
+  // Crear el JSON para enviar (accion 'on' o 'off')
+  String jsonPayload = "{\"action\": \"" + action + "\"}";
+
+  int httpResponseCode = http.POST(jsonPayload);  // Enviar el JSON al servidor
+
+  // Comprobar la respuesta del servidor
+  if (httpResponseCode > 0) {
+    String response = http.getString();
+    Serial.println("Respuesta del servidor (LED): " + response);
+    // Según la respuesta, controlas los LEDs localmente
+    if (action == "on") {
+      digitalWrite(pinLed1, HIGH);  // Encender LED
+    } else {
+      digitalWrite(pinLed1, LOW);  // Apagar LED
+    }
+  } else {
+    Serial.print("Error en la solicitud HTTP: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();  // Finalizar la conexión HTTP
 }

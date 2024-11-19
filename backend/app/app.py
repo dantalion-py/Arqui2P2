@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from flask_cors import CORS
 from bson import ObjectId
+import os
 
 
 
@@ -10,7 +11,6 @@ app = Flask(__name__)
 
 # Habilitar CORS
 CORS(app)
-led_states = {"led1": False, "led2": False}
 
 # Conexión a MongoDB
 client = MongoClient("mongodb+srv://delfin:FuegoRojo@clusterarqui.2kmjw.mongodb.net/")
@@ -157,7 +157,17 @@ def control_led(led_id):
     if action not in ["on", "off"]:
         return jsonify({"error": "Invalid action. Use 'on' or 'off'."}), 400
 
-    led_states[led_id] = (action == "on")
-    return jsonify({"message": f"{led_id} turned {action}", "state": led_states[led_id]}), 200
+    # Aquí puedes manejar el control de los LEDs en el servidor
+    if led_id == "led1":
+        # Enviar la señal a la ESP32 para encender o apagar el LED1
+        # Este es un ejemplo, necesitarías configurar el servidor para controlar los pines de la ESP32
+        pass
+    elif led_id == "led2":
+        # Similar para LED2
+        pass
+    
+    return jsonify({"message": f"{led_id} turned {action}"}), 200
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

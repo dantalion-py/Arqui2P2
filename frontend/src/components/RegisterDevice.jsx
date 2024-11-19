@@ -19,7 +19,7 @@ const RegisterDevice = ({ fetchDevices }) => {
         e.preventDefault();
         if (!formData.name.trim()) return alert('Device name is required');
         try {
-            const response = await fetch('http://localhost:5000/devices', {
+            const response = await fetch('http://35.193.61.252:5000/devices', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

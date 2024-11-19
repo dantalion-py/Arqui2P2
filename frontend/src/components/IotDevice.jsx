@@ -32,7 +32,7 @@ const TemperatureDashboard = () => {
 
     const fetchTemperatureData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/temperaturas');
+            const response = await fetch('http://35.193.61.252:5000/temperaturas');
             if (!response.ok) {
                 throw new Error(`Error: ${response.statusText}`);
             }
@@ -97,7 +97,7 @@ const TemperatureDashboard = () => {
 
     const controlLed = async (ledId, action) => {
         try {
-            const response = await fetch(`http://localhost:5000/led/${ledId}`, {
+            const response = await fetch(`http://35.193.61.252:5000/led/${ledId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action }),
